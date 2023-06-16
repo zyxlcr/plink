@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "../proto";
+
+package chat;
+
+message ProductRequest{
+ int32  prod_id = 1;
+}
+
+message  ProductResponse{
+   int32 prod_socket = 1;
+}
+//定义服务
+service ProdService{
+  //双向流
+  rpc   GetProdSocket(stream ProductRequest)returns(stream ProductResponse);
+}

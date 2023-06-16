@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Chat</title>
+</head>
+<body>
+    <!-- Login form -->
+    <div id="loginForm">
+        <h1>WebSocket Chat</h1>
+        <input type="text" id="usernameInput" placeholder="Username">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Chat area -->
+    <div id="chatArea" style="display: none;">
+        <h1>Welcome, <span id="username"></span>!</h1>
+        <div id="messageArea"></div>
+        <br>
+        <input type="text" id="messageInput" placeholder="Type message here...">
+        <button onclick="sendMessage()">Send</button>
+        <br><br>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        let socket;
+        let username;
+
+        // Show login form and hide chat area
+        function showLoginForm() {
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("chatArea").style.display = "none";
+        }
+
+        // Show chat area and hide login form
+        function showChatArea() {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("chatArea").style.display = "block";
+        }
+
+        // Handle connection open event
+        function handleOpen() {
+            console.log("WebSocket connected!");
+        }
+
+        // Handle incoming messages
+        function handleMessage(event) {
+            // Get message data
+            const data = JSON.parse(event.data);
+
+            if (data.type === "chat") {
+                // Add message to message area
+                const messageArea = document.getElementById("messageArea");
+                const messageElem = document.createElement("div");
+                messageElem.innerText = `${data.username}: ${data.message}`;
+                messageArea.appendChild(messageElem);
+            }
+        }
+
+        // Handle connection close event
+        function handleClose(event) {
+            console.log("WebSocket closed:", event);
+
+            // Show login form again
+            showLoginForm();
+        }
+
+        // Login with a username
+        function login() {
+            const usernameInput = document.getElementById("usernameInput");
+            username = usernameInput.value.trim();
+
+            if (username !== "") {
+                // Connect to WebSocket server
+                socket = new WebSocket("ws://localhost:8988/ws");
+                socket.onopen = handleOpen;
+                socket.onmessage = handleMessage;
+                socket.onclose = handleClose;
+
+                // Send login message to server
+                socket.send(JSON.stringify({
+                    type: "login",
+                    username: username,
+                }));
+
+                // Update UI
+                document.getElementById("username").innerText = username;
+                showChatArea();
+            }
+        }
+
+        // Logout and disconnect from WebSocket server
+        function logout() {
+            socket.send(JSON.stringify({
+                type: "logout",
+                username: username,
+            }));
+            socket.close();
+            showLoginForm();
+        }
+
+        // Send chat message to server
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
+
+            if (message !== "") {
+                socket.send(JSON.stringify({
+                    type: "chat",
+                    username: username,
+                    message: message,
+                }));
+                messageInput.value = "";
+            }
+        }
+    </script>
+</body>
+</html>
