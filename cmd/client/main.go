@@ -3,9 +3,12 @@ package main
 import (
 	"chatcser/pkg/plink/datapack"
 	"chatcser/pkg/plink/iface"
+	"chatcser/pkg/user"
 	"fmt"
 	"net"
 	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /*
@@ -23,8 +26,19 @@ func ClientTest() {
 		return
 	}
 
+	p := user.BaseUser{Name: "zhang", Password: "123456", Email: "z@qq.com", Tel: "232342"}
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+	b, err := json.Marshal(p)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(b))
+
+	bb := []byte("{\"Name\":\"zhang\",\"Password\":\"123456\",\"Email\":\"z@qq.com\",\"Telephone\":\"232342\"}")
+
 	for {
-		msg := iface.NewMsgPackagewithUrl("/ping", []byte("okkkk ooo"))
+		msg := iface.NewMsgPackagewithUrl("/reg", bb)
 		msg.SetMsgId(4196270080)
 		data, err := datapack.NewDataPack().Pack(msg)
 		if err != nil {

@@ -7,9 +7,10 @@ import (
 )
 
 type Header struct {
-	Url  string
-	From string
-	To   string
+	Url   string `json:"url"`
+	From  string `json:"from"`
+	To    string `json:"to"`
+	Token string `json:"token"`
 }
 
 func NewHeader(url string) *Header {

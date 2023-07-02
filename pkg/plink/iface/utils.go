@@ -2,6 +2,7 @@ package iface
 
 import (
 	"chatcser/pkg/plink/config"
+	"chatcser/pkg/plink/route"
 	"net"
 	"net/http"
 )
@@ -21,6 +22,7 @@ type IServer interface {
 	GetConnMgr() IConnManager
 
 	GetRouter() IRouter
+	GetRoute() *route.Router
 	GetConfig() *config.Config
 	GetMsgHandler() IMsgHandle
 	SetWsHandle(h http.Handler)
@@ -90,6 +92,8 @@ type IRouter interface {
 	GetHandlerWithUrl(string) HandlerFunc
 	Use(...Middleware)
 	Post(string, HandlerFunc)
+	GroupWithMore(prefix string, middleware ...Middleware) IRouter
+	Group(prefix string) IRouter
 }
 
 type IRouter2 interface {
@@ -98,4 +102,4 @@ type IRouter2 interface {
 	PostHandle(request IRequest) //处理conn业务之后的钩子方法
 }
 
-type Middleware func(h HandlerFunc) HandlerFunc
+type Middleware func(HandlerFunc) HandlerFunc

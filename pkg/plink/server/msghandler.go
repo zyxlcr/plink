@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"chatcser/pkg/plink/iface"
+	"chatcser/pkg/plink/route"
 
 	"github.com/rs/xid"
 	//"chatcser/pkg/plink/router"
@@ -15,6 +16,7 @@ type MsgHandle struct {
 	MaxWorkerTaskLen uint32                //
 	TaskQueue        []chan iface.IRequest //Worker负责取任务的消息队列
 	Router           iface.IRouter
+	Route            *route.Router
 }
 
 func NewMsgHandle(s iface.IServer) *MsgHandle {
@@ -24,6 +26,7 @@ func NewMsgHandle(s iface.IServer) *MsgHandle {
 		MaxWorkerTaskLen: s.GetConfig().MaxWorkerTaskLen,
 		TaskQueue:        make([]chan iface.IRequest, s.GetConfig().MaxWorkerTaskLen), //一个worker对应一个queue
 		Router:           s.GetRouter(),
+		Route:            s.GetRoute(),
 	}
 }
 
@@ -67,6 +70,15 @@ func (mh *MsgHandle) DoMsgHandler(request iface.IRequest) {
 		// 	//node.Handler(request)
 	} else {
 		fmt.Println("handler nil!!")
+	}
+
+	handler2 := mh.Route.Find(h.Url)
+	if handler2 != nil {
+
+		handler2(h.ToReq(request.GetConnection(), request.GetMsg()))
+		// 	//node.Handler(request)
+	} else {
+		fmt.Println("handler2 nil!!")
 	}
 
 	// handler, ok := mh.Apis[request.GetMsgID()]

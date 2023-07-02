@@ -4,6 +4,7 @@ import (
 	"chatcser/pkg/plink/config"
 	"chatcser/pkg/plink/connection"
 	"chatcser/pkg/plink/iface"
+	"chatcser/pkg/plink/route"
 	"net/http"
 
 	"fmt"
@@ -17,6 +18,7 @@ type TcpServer struct {
 	PServer iface.IServer
 
 	Router iface.IRouter
+	Route  *route.Router
 
 	//当前Server的消息管理模块，用来绑定MsgId和对应的处理方法
 	MsgHandler iface.IMsgHandle
@@ -35,6 +37,7 @@ func NewTcpServer(s iface.IServer) *TcpServer {
 	//r := router.NewRouter()
 	return &TcpServer{
 		Router:     s.GetRouter(),
+		Route:      s.GetRoute(),
 		MsgHandler: s.GetMsgHandler(),
 		ConnMgr:    s.GetConnMgr(),
 		Config:     s.GetConfig(),
@@ -157,6 +160,9 @@ func (s *TcpServer) GetConfig() *config.Config {
 
 func (s *TcpServer) GetRouter() iface.IRouter {
 	return s.Router
+}
+func (s *TcpServer) GetRoute() *route.Router {
+	return s.Route
 }
 
 func (s *TcpServer) GetMsgHandler() iface.IMsgHandle {

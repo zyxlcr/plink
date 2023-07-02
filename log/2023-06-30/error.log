@@ -1,0 +1,10 @@
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 03:12:07.685","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 03:12:07.686","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token eror"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 03:13:16.361","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 03:13:16.366","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token eror"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 03:22:16.842","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 03:25:45.103","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 03:39:07.294","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 17:18:58.867","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 18:56:08.804","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
+{"level":"\u001b[31merror\u001b[0m","time":"2023-06-30 19:15:57.966","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token eror"}

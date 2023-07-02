@@ -9,7 +9,7 @@ import (
 // IRouteGroup interface for router group
 type IRouteGroup interface {
 	IRoutes
-	GroupWithNone(prefix string) IRouteGroup
+	//GroupWithNone(prefix string) IRouteGroup
 	GroupWithMore(prefix string, middleware ...iface.Middleware) IRouteGroup
 	Group(prefix string) IRouteGroup
 }
@@ -17,16 +17,16 @@ type IRouteGroup interface {
 // IRoutes interface for routes
 type IRoutes interface {
 	Use(...iface.Middleware)
-	Any(string, iface.HandlerFunc)
-	Get(string, iface.HandlerFunc)
+	// Any(string, iface.HandlerFunc)
+	// Get(string, iface.HandlerFunc)
 	Post(string, iface.HandlerFunc)
-	Delete(string, iface.HandlerFunc)
-	Patch(string, iface.HandlerFunc)
-	Put(string, iface.HandlerFunc)
-	Options(string, iface.HandlerFunc)
-	Head(string, iface.HandlerFunc)
-	Connect(string, iface.HandlerFunc)
-	Trace(string, iface.HandlerFunc)
+	// Delete(string, iface.HandlerFunc)
+	// Patch(string, iface.HandlerFunc)
+	// Put(string, iface.HandlerFunc)
+	// Options(string, iface.HandlerFunc)
+	// Head(string, iface.HandlerFunc)
+	// Connect(string, iface.HandlerFunc)
+	// Trace(string, iface.HandlerFunc)
 }
 
 // routeGroup struct containing all fields and methods for use.
@@ -36,7 +36,7 @@ type routeGroup struct {
 	pure       *Router
 }
 
-var _ IRouteGroup = &routeGroup{}
+var _ iface.IRouter = &routeGroup{}
 
 func (g *routeGroup) handle(method string, path string, handler iface.HandlerFunc) {
 
@@ -143,7 +143,7 @@ func (g *routeGroup) Match(methods []string, path string, h iface.HandlerFunc) {
 }
 
 // GroupWithNone creates a new sub router with specified prefix and no middleware attached.
-func (g *routeGroup) GroupWithNone(prefix string) IRouteGroup {
+func (g *routeGroup) GroupWithNone(prefix string) iface.IRouter {
 	return &routeGroup{
 		prefix:     g.prefix + prefix,
 		pure:       g.pure,
@@ -152,7 +152,7 @@ func (g *routeGroup) GroupWithNone(prefix string) IRouteGroup {
 }
 
 // GroupWithMore creates a new sub router with specified prefix, retains existing middleware and adds new middleware.
-func (g *routeGroup) GroupWithMore(prefix string, middleware ...iface.Middleware) IRouteGroup {
+func (g *routeGroup) GroupWithMore(prefix string, middleware ...iface.Middleware) iface.IRouter {
 	rg := &routeGroup{
 		prefix:     g.prefix + prefix,
 		pure:       g.pure,
@@ -164,7 +164,7 @@ func (g *routeGroup) GroupWithMore(prefix string, middleware ...iface.Middleware
 }
 
 // Group creates a new sub router with specified prefix and retains existing middleware.
-func (g *routeGroup) Group(prefix string) IRouteGroup {
+func (g *routeGroup) Group(prefix string) iface.IRouter {
 	rg := &routeGroup{
 		prefix:     g.prefix + prefix,
 		pure:       g.pure,
@@ -172,4 +172,10 @@ func (g *routeGroup) Group(prefix string) IRouteGroup {
 	}
 	copy(rg.middleware, g.middleware)
 	return rg
+}
+
+func (g *routeGroup) GetHandlerWithUrl(url string) iface.HandlerFunc {
+	tree := g.pure.trees["POST"]
+	h, _ := tree.Find(url, g.pure)
+	return h
 }

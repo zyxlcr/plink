@@ -85,3 +85,17 @@ func (m *Router) GetHandlerWithUrl(url string) iface.HandlerFunc {
 	h, _ := tree.Find(url, m)
 	return h
 }
+
+func (m *Router) Use(mi ...iface.Middleware) {
+	m.routeGroup.Use(mi...)
+}
+func (m *Router) Post(s string, h iface.HandlerFunc) {
+	m.routeGroup.Post(s, h)
+}
+func (m *Router) GroupWithMore(prefix string, middleware ...iface.Middleware) iface.IRouter {
+	return m.routeGroup.GroupWithMore(prefix, middleware...)
+}
+
+func (m *Router) Group(prefix string) iface.IRouter {
+	return m.routeGroup.Group(prefix)
+}

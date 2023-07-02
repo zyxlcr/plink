@@ -52,7 +52,8 @@ func NewPingReq(conn IConnection) Request {
 	}
 }
 
-type HandlerFunc func(ResponseWriter, *Request)
+type HandlerFunc func(res ResponseWriter, req *Request)
+
 type HandlerFun func(ctx any)
 
 type IRequest interface {
@@ -78,12 +79,12 @@ type Request struct {
 	//Response      *Response
 }
 
-//获取请求连接信息
+// 获取请求连接信息
 func (r *Request) GetConnection() IConnection { // ziface.IConnection {
 	return r.conn
 }
 
-//获取请求消息的数据
+// 获取请求消息的数据
 func (r *Request) GetBody() []byte {
 	return r.msg.GetBody()
 }
@@ -100,12 +101,12 @@ func (r *Request) GetHeaderLen() uint32 {
 	return r.msg.GetHeaderLen()
 }
 
-//获取请求的消息的ID
+// 获取请求的消息的ID
 func (r *Request) GetMsgID() uint32 {
 	return r.msg.GetMsgId()
 }
 
-//获取 消息
+// 获取 消息
 func (r *Request) GetMsg() IMessage {
 	return r.msg
 }

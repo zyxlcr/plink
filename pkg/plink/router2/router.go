@@ -1,96 +1,168 @@
-package router2
+package route
 
 import (
-	"strings"
+	"errors"
+	//"net/http"
 )
 
-type HandlerFun func(ctx any)
-
-type Node struct {
-	path     string           // 当前节点的路径
-	children map[string]*Node // 子节点集合
-	isLeaf   bool             // 是否为叶子节点
-	Param    string           // 参数名（如果该节点是变量）
-	Handler  HandlerFun       // 绑定的方法
+// Router represents the router which handles routing.
+type Router struct {
+	Tree                    map[string]*tree
+	NotFoundHandler         HandlerFun
+	MethodNotAllowedHandler HandlerFun
+	DefaultOPTIONSHandler   HandlerFun
+	globalMiddlewares       middlewares
 }
 
-func NewNode(path string) *Node {
-	return &Node{
-		path:     path,
-		children: make(map[string]*Node),
-		isLeaf:   false,
-		Param:    "",
-		Handler:  nil,
+// route represents the route which has data for a routing.
+type route struct {
+	methods     []string
+	path        string
+	handler     HandlerFun
+	middlewares middlewares
+}
+
+var (
+	tmpRoute = &route{}
+
+	// Error for not found.
+	ErrNotFound = errors.New("no matching route was found")
+	// Error for method not allowed.
+	ErrMethodNotAllowed = errors.New("methods is not allowed")
+)
+
+// NewRouter creates a new router.
+func NewRouter() *Router {
+	return &Router{
+		Tree: map[string]*tree{},
 	}
 }
 
-type PrefixTree struct {
-	root *Node
+func (r *Router) UseGlobal(mws ...middleware) {
+	nm := NewMiddlewares(mws)
+	r.globalMiddlewares = nm
 }
 
-func NewPrefixTree() *PrefixTree {
-	return &PrefixTree{
-		root: NewNode(""),
-	}
+// Use sets middlewares.
+func (r *Router) Use(mws ...middleware) *Router {
+	nm := NewMiddlewares(mws)
+	tmpRoute.middlewares = nm
+	return r
 }
 
-func (p *PrefixTree) Insert(path string, handler HandlerFun) {
-	node := p.root
-	paths := strings.Split(path, "/")
-
-	for _, p := range paths {
-		if len(p) == 0 {
-			continue
-		}
-
-		if strings.HasPrefix(p, ":") {
-			child, ok := node.children[":"]
-			if !ok {
-				child = NewNode(p)
-				child.Param = p[1:]
-				node.children[":"] = child
-			}
-			node = child
-		} else {
-			child, ok := node.children[p]
-			if !ok {
-				child = NewNode(p)
-				node.children[p] = child
-			}
-			node = child
-		}
-	}
-
-	node.isLeaf = true
-	node.Handler = handler
+// Use sets methods.
+func (r *Router) Methods(methods ...string) *Router {
+	tmpRoute.methods = append(tmpRoute.methods, methods...)
+	return r
+}
+func (r *Router) Post() *Router {
+	tmpRoute.methods = append(tmpRoute.methods, "POST")
+	return r
 }
 
-func (p *PrefixTree) Search(path string) (*Node, map[string]string) {
-	node := p.root
-	params := make(map[string]string)
-	paths := strings.Split(path, "/")
+// Handler sets a handler.
+func (r Router) Handler(path string, handler HandlerFun) {
+	tmpRoute.handler = handler
+	tmpRoute.path = path
+	r.Handle()
+}
 
-	for _, p := range paths {
-		if len(p) == 0 {
-			continue
-		}
-
-		child, ok := node.children[p]
+// Handle handles a route.
+func (r *Router) Handle() {
+	for i := 0; i < len(tmpRoute.methods); i++ {
+		_, ok := r.Tree[tmpRoute.methods[i]]
 		if !ok {
-			child, ok = node.children[":"]
-			if !ok {
-				return nil, params
-			}
-			params[child.Param] = p
-			node = child
-		} else {
-			node = child
+			r.Tree[tmpRoute.methods[i]] = newTree()
 		}
+		r.Tree[tmpRoute.methods[i]].Insert(tmpRoute.path, tmpRoute.handler, tmpRoute.middlewares)
+	}
+	tmpRoute = &route{}
+}
+
+// ServeHTTP dispatches the request to the handler whose
+// pattern most closely matches the request URL.
+// func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+// 	method := req.Method
+// 	if method == http.MethodOptions {
+// 		if r.DefaultOPTIONSHandler != nil {
+// 			r.DefaultOPTIONSHandler.ServeHTTP(w, req)
+// 			return
+// 		}
+// 	}
+
+// 	t, ok := r.tree[method]
+// 	if !ok {
+// 		if r.MethodNotAllowedHandler == nil {
+// 			methodNotAllowedHandler().ServeHTTP(w, req)
+// 			return
+// 		}
+// 		r.MethodNotAllowedHandler.ServeHTTP(w, req)
+// 		return
+// 	}
+
+// 	action, params, err := t.Search(req.URL.Path)
+// 	if err == ErrNotFound {
+// 		if r.NotFoundHandler == nil {
+// 			http.NotFoundHandler().ServeHTTP(w, req)
+// 			return
+// 		}
+// 		r.NotFoundHandler.ServeHTTP(w, req)
+// 		return
+// 	}
+
+// 	h := action.handler
+// 	// append globalMiddlewares to head of middlewares.
+// 	mws := append(r.globalMiddlewares, action.middlewares...)
+// 	if mws != nil {
+// 		h = mws.then(h)
+// 	}
+// 	if params != nil {
+// 		ctx := context.WithValue(req.Context(), ParamsKey, params)
+// 		req = req.WithContext(ctx)
+// 	}
+// 	h.ServeHTTP(w, req)
+// }
+
+func (r *Router) Find(url string) HandlerFun {
+	method := "POST" //req.Method
+
+	t, ok := r.Tree[method]
+	if !ok {
+		if r.MethodNotAllowedHandler == nil {
+			//methodNotAllowedHandler().ServeHTTP(w, req)
+			return nil
+		}
+		//r.MethodNotAllowedHandler.ServeHTTP(w, req)
+		return nil
 	}
 
-	if !node.isLeaf {
-		return nil, params
+	action, params, err := t.Search(url)
+	if err == ErrNotFound {
+		if r.NotFoundHandler == nil {
+			//http.NotFoundHandler().ServeHTTP(w, req)
+			return nil
+		}
+		//r.NotFoundHandler.ServeHTTP(w, req)
+		return nil
 	}
 
-	return node, params
+	h := action.handler
+	// append globalMiddlewares to head of middlewares.
+	mws := append(r.globalMiddlewares, action.middlewares...)
+	if mws != nil {
+		h = mws.then(h)
+	}
+	if params != nil {
+		//ctx := context.WithValue(req.Context(), ParamsKey, params)
+		//req = req.WithContext(ctx)
+	}
+	return h
+	//h(ctx)
+}
+
+// methodNotAllowedHandler is a default handler when status code is 405.
+func methodNotAllowedHandler() HandlerFun {
+	return HandlerFun(func(ctx any) {
+		//w.WriteHeader(http.StatusMethodNotAllowed)
+	})
 }

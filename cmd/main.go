@@ -1,14 +1,37 @@
 package main
 
 import (
+	"chatcser/config"
+	"chatcser/internal/app"
 	"chatcser/pkg/plink/iface"
 	"chatcser/pkg/plink/server"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func main() {
+	// 初始化配置
+	config.GVA_VP = app.Viper()
+	// 初始化日志
+	config.GVA_LOG = app.Zap()
+	zap.ReplaceGlobals(config.GVA_LOG)
+
+	// 初始化数据库
+	config.GVA_DB = app.Gorm() // gorm连接数据库
+	if config.GVA_DB != nil {
+		// 程序结束前关闭数据库链接
+		db, _ := config.GVA_DB.DB()
+		defer db.Close()
+	}
+	s := app.NewService()
+	s.Run()
+
+}
+
+func main23() {
 
 	//r := gin.Default()
 	//r.GET("/ping", func(c *gin.Context) {

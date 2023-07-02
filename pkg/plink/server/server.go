@@ -5,6 +5,7 @@ import (
 	"chatcser/pkg/plink/connection"
 	"chatcser/pkg/plink/grpc"
 	"chatcser/pkg/plink/iface"
+	"chatcser/pkg/plink/route"
 	"chatcser/pkg/plink/router"
 	"chatcser/pkg/plink/tcpserver"
 	ws "chatcser/pkg/plink/websocket"
@@ -25,6 +26,7 @@ type Server struct {
 	GrpcServer *grpc.GrpcService
 
 	Router iface.IRouter
+	Route  *route.Router
 
 	Wshandler http.Handler
 
@@ -46,11 +48,13 @@ type Server struct {
 func NewServer() *Server {
 	r := router.NewRouter()
 	c := config.NewConfig()
+	r2 := route.NewRouter()
 	s := Server{
 		Config: c,
 
 		// grpcServer: grpc.NewServer(),
 		Router: r,
+		Route:  r2,
 
 		ConnMgr: connection.NewConnManager(),
 	}
@@ -145,6 +149,9 @@ func (s *Server) GetConfig() *config.Config {
 
 func (s *Server) GetRouter() iface.IRouter {
 	return s.Router
+}
+func (s *Server) GetRoute() *route.Router {
+	return s.Route
 }
 
 func (s *Server) GetMsgHandler() iface.IMsgHandle {
