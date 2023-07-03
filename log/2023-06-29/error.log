@@ -1,4 +1,0 @@
-{"level":"\u001b[31merror\u001b[0m","time":"2023-06-29 15:45:14.268","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
-{"level":"\u001b[31merror\u001b[0m","time":"2023-06-29 15:45:14.269","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token eror"}
-{"level":"\u001b[31merror\u001b[0m","time":"2023-06-29 19:01:28.447","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"that's not even a token"}
-{"level":"\u001b[31merror\u001b[0m","time":"2023-06-29 19:01:28.483","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token eror"}

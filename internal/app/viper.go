@@ -30,7 +30,7 @@ func Viper(path ...string) *viper.Viper {
 		if cfg == "" {
 			/*
 			   判断 internal.ConfigEnv 常量存储的环境变量是否为空
-			   比如我们启动项目的时候，执行：GVA_CONFIG=config.yaml go run main.go
+			   比如我们启动项目的时候，执行：GVA_CONFIG=../config/config.yaml go run main.go
 			   这时候 os.Getenv(internal.ConfigEnv) 得到的就是 config.yaml
 			   当然，也可以通过 os.Setenv(internal.ConfigEnv, "config.yaml") 在初始化之前设置
 			*/

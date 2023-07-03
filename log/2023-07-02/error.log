@@ -1,4 +1,0 @@
-{"level":"\u001b[31merror\u001b[0m","time":"2023-07-02 17:41:50.051","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token is expired"}
-{"level":"\u001b[31merror\u001b[0m","time":"2023-07-02 17:49:47.960","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token is expired"}
-{"level":"\u001b[31merror\u001b[0m","time":"2023-07-02 17:52:25.756","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token is expired"}
-{"level":"\u001b[31merror\u001b[0m","time":"2023-07-02 17:57:51.450","caller":"/Users/arick/project/chat/pkg/utils/error.go:9","message":"token eror"}

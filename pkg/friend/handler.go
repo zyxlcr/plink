@@ -1,18 +1,14 @@
-package user
+package friend
 
 import (
 	"chatcser/config"
 	"chatcser/pkg/model"
+	"chatcser/pkg/user"
 
 	"github.com/pkg/errors"
 )
 
-func (b BaseUser) Ping() {
-	config.GVA_LOG.Info("ping")
-
-}
-
-func (b BaseUser) Search(u BaseUser) (BaseUser, error) {
+func (f Friend) Search(u user.BaseUser) (user.BaseUser, error) {
 	config.GVA_LOG.Info("Search")
 	mapper := model.NewMapper(u, nil)
 	user, err := mapper.SelectOne()
@@ -22,5 +18,13 @@ func (b BaseUser) Search(u BaseUser) (BaseUser, error) {
 	}
 	config.GVA_LOG.Info(user.Name)
 	return user, nil
+
+}
+
+func (f Friend) MyFriends() (fs Friends, err error) {
+	config.GVA_LOG.Info("Search")
+	err = config.GVA_DB.Model(&f).Preload("base_user").Select(&fs).Error
+
+	return
 
 }
