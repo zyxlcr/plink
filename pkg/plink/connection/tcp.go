@@ -147,6 +147,27 @@ func (c *Connection) SendMsgWithUrl(url string, data []byte) error {
 	return nil
 }
 
+func (c *Connection) SendMsgWithUrlFromTo(url string, from string, to string, data []byte) error {
+	if c.IsTcpClosed == true {
+		return errors.New("Connection closed when send msg")
+	}
+	//将data封包，并且发送
+	imsg := iface.NewMsgPackagewithUrlFromTo(url, from, to, data)
+
+	//fmt.Println("msgid", imsg.GetMsgId(), "headerLen", imsg.GetHeaderLen(), "bodyLen", imsg.GetBodyLen())
+	//fmt.Println("data", data, "string", string(data))
+	msg, err := datapack.NewDataPack().Pack(imsg)
+	if err != nil {
+		fmt.Println("Pack error msg id = ", imsg.GetMsgId())
+		return errors.New("Pack error msg ")
+	}
+
+	//写回客户端
+	c.MsgChanTcp <- msg
+
+	return nil
+}
+
 func (c *Connection) SendBuffMsg(header []byte, data []byte) error {
 	if c.IsTcpClosed == true {
 		return errors.New("Connection closed when send msg")

@@ -20,16 +20,16 @@ func Ping(res iface.ResponseWriter, req *iface.Request) {
 
 }
 
-func Reg(reqBody user.BaseUser, req *iface.Request) error {
+func Reg(reqBody RegisterReq, req *iface.Request) error {
 	config.GVA_LOG.Info("Reg")
-	m := user.BaseUser{Name: reqBody.Name}
+	m := user.BaseUser{Name: reqBody.Username}
 	mapper := model.NewMapper(m, nil)
 	_, err := mapper.SelectOne()
 	if err == nil {
-		return errors.Errorf("用户已存在: %s", reqBody.Name)
+		return errors.Errorf("用户已存在: %s", reqBody.Username)
 	}
 	user := user.BaseUser{
-		Name:     reqBody.Name,
+		Name:     reqBody.Username,
 		Password: utils.BcryptHash(reqBody.Password),
 		Email:    reqBody.Email,
 	}

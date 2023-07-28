@@ -1,6 +1,6 @@
 package app
 
-func (s Service) addAllRouter() {
+func (s *Service) addAllRouter() {
 	s.Ser.AddRouter("/ping", s.Ping)
 
 	s.Ser.Route.Handler("/ping", s.Ping2)
@@ -13,7 +13,8 @@ func (s Service) addAllRouter() {
 	s.Ser.Route.Handler("/user/search", s.SearchUser)
 
 	s.Ser.Route.Use(s.Auth2).Handler("/notification/send", s.Send)
-	s.Ser.Route.Use(s.Auth2).Handler("/notification/doAddfriend", s.DoNotification)
+	s.Ser.Route.Use(s.Auth2).Handler("/notification/my", s.My)
+	s.Ser.Route.Use(s.Auth2).Handler("/notification/doaction", s.DoNotification)
 
 	s.Ser.Route.Use(s.Auth2).Handler("/friend/myfriend", s.MyFriends)
 

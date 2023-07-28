@@ -18,6 +18,8 @@ func main() {
 	// 初始化日志
 	config.GVA_LOG = app.Zap()
 	zap.ReplaceGlobals(config.GVA_LOG)
+	// 初始化redis
+	config.GVA_REDIS = app.Reids()
 
 	// 初始化数据库
 	config.GVA_DB = app.Gorm() // gorm连接数据库
@@ -26,6 +28,14 @@ func main() {
 		db, _ := config.GVA_DB.DB()
 		defer db.Close()
 	}
+	// 初始化数据库
+	config.GVA_AORM = app.Aorm() // gorm连接数据库
+	if config.GVA_AORM != nil {
+		// 程序结束前关闭数据库链接
+		config.GVA_LOG.Info("db con != nil2")
+		defer config.GVA_AORM.Close()
+	}
+	app.RegisterTablesAorm(config.GVA_AORM, false)
 	s := app.NewService()
 	s.Run()
 

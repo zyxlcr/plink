@@ -59,7 +59,7 @@ type IConnection interface {
 	SendMsg([]byte, []byte) error
 
 	SendMsgWithUrl(string, []byte) error
-	//SendMsgWithUrl(url string, data []byte) error
+	SendMsgWithUrlFromTo(url string, from string, to string, data []byte) error
 
 	// ReadMessage() ([]byte, error)
 

@@ -7,6 +7,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/tangpanqing/aorm"
+	"github.com/tangpanqing/aorm/base"
+	"github.com/tangpanqing/aorm/driver"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -103,4 +106,23 @@ func GormMysql() *gorm.DB {
 		sqlDB.SetMaxOpenConns(m.MaxOpenConns)
 		return db
 	}
+}
+
+func AormMysql() *base.Db {
+	m := config.GVA_CONFIG.Mysql
+	//连接数据库
+	db, err := aorm.Open(driver.Mysql, m.Username+":"+m.Password+"@tcp("+m.Path+":"+m.Port+")/"+m.Dbname+"?charset=utf8mb4&parseTime=True&loc=Local")
+	if err != nil {
+		panic(err)
+	}
+
+	//设置最大的有效连接数
+	db.SetMaxOpenConns(5)
+
+	//设置调试模式
+	db.SetDebugMode(true)
+
+	aorm.Db(db)
+
+	return db
 }

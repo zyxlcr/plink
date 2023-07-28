@@ -18,6 +18,13 @@ func NewHeader(url string) *Header {
 		Url: url,
 	}
 }
+func NewHeaderFromTo(url string, from string, to string) *Header {
+	return &Header{
+		Url:  url,
+		From: from,
+		To:   to,
+	}
+}
 
 func (h *Header) ToJson() ([]byte, error) {
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary

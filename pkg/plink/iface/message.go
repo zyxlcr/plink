@@ -35,7 +35,7 @@ type Message struct {
 	Body      []byte //消息的内容
 }
 
-//创建一个Message消息包
+// 创建一个Message消息包
 func NewMsgPackage(header []byte, data []byte) *Message {
 	return &Message{
 		Id:        GenerateMessageID(),
@@ -60,27 +60,41 @@ func NewMsgPackagewithUrl(url string, data []byte) *Message {
 	}
 }
 
-//获取消息数据段长度
+func NewMsgPackagewithUrlFromTo(url string, from string, to string, data []byte) *Message {
+	h, err := NewHeaderFromTo(url, from, to).ToJson()
+	if err != nil {
+		return nil
+	}
+	return &Message{
+		Id:        GenerateMessageID(),
+		HeaderLen: uint32(len(h)),
+		Header:    []byte(h),
+		BodyLen:   uint32(len(data)),
+		Body:      data,
+	}
+}
+
+// 获取消息数据段长度
 func (msg *Message) GetBodyLen() uint32 {
 	return msg.BodyLen
 }
 
-//获取消息ID
+// 获取消息ID
 func (msg *Message) GetMsgId() uint32 {
 	return msg.Id
 }
 
-//获取消息内容
+// 获取消息内容
 func (msg *Message) GetBody() []byte {
 	return msg.Body
 }
 
-//获取消息内容
+// 获取消息内容
 func (msg *Message) GetHeaderLen() uint32 {
 	return msg.HeaderLen
 }
 
-//获取消息内容
+// 获取消息内容
 func (msg *Message) GetHeader() []byte {
 	return msg.Header
 }
@@ -91,27 +105,27 @@ func (msg *Message) GetUrl() string {
 	return h.Url
 }
 
-//设置消息数据段长度
+// 设置消息数据段长度
 func (msg *Message) SetBodyLen(len uint32) {
 	msg.BodyLen = len
 }
 
-//设计消息ID
+// 设计消息ID
 func (msg *Message) SetMsgId(msgId uint32) {
 	msg.Id = msgId
 }
 
-//设计消息内容
+// 设计消息内容
 func (msg *Message) SetBody(data []byte) {
 	msg.Body = data
 }
 
-//设置头长度
+// 设置头长度
 func (msg *Message) SetHeaderLen(msgId uint32) {
 	msg.HeaderLen = msgId
 }
 
-//设置头内容
+// 设置头内容
 func (msg *Message) SetHeader(data []byte) {
 	msg.Header = data
 }

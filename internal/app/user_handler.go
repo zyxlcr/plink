@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func (s Service) SearchUser(ctx any) {
+func (s *Service) SearchUser(ctx any) {
 	config.GVA_LOG.Info("SearchUser")
 	req, ok := ctx.(*iface.Request)
 	if !ok {
@@ -31,7 +31,12 @@ func (s Service) SearchUser(ctx any) {
 		Email: f.Email,
 		Tel:   f.Tel,
 	}
-	u, err = s.User.Search(u)
+	u, err = u.Search()
+	if err != nil {
+		config.GVA_LOG.Info(err.Error())
+		req.GetConnection().SendMsgWithUrl("/user/search/ack/err", []byte(err.Error()))
+		return
+	}
 
 	var res = friend.SearchRes{
 		Username:  u.Name,
@@ -42,6 +47,11 @@ func (s Service) SearchUser(ctx any) {
 	}
 
 	b, err := jsonx.Marshal(res)
+	if err != nil {
+		config.GVA_LOG.Info(err.Error())
+		req.GetConnection().SendMsgWithUrl("/user/search/ack/err", []byte(err.Error()))
+		return
+	}
 
 	req.GetConnection().SendMsgWithUrl("/user/search/ack", b)
 

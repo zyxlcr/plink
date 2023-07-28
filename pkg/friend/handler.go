@@ -22,9 +22,23 @@ func (f Friend) Search(u user.BaseUser) (user.BaseUser, error) {
 }
 
 func (f Friend) MyFriends() (fs Friends, err error) {
-	config.GVA_LOG.Info("Search")
-	err = config.GVA_DB.Model(&f).Preload("base_user").Select(&fs).Error
+	config.GVA_LOG.Info("MyFriends")
+	err = config.GVA_DB.Model(&f).Preload("FriendInfo").Where("uid", f.Uid).Where("is_del", 0).Find(&fs).Error //
 
 	return
+
+}
+
+func (f Friend) AddFriends() (err error) {
+	config.GVA_LOG.Info("AddFriends")
+	fs := Friend{
+		Uid:      f.FriendId,
+		FriendId: f.Uid,
+		IsDel:    0,
+	}
+	mapper := model.NewMapper(f, nil)
+	err = mapper.Insert(&f)
+	err = mapper.Insert(&fs)
+	return err
 
 }

@@ -23,7 +23,7 @@ mysql:
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: true
-  log-zap: false
+  log-zap: true
 
 zap: # 日志配置
   level: info # 日志级别
@@ -35,3 +35,9 @@ zap: # 日志配置
   max_age: 0 # 日志留存时间
   show_line: true # 显示行
   log_in_console: true # 输出控制台
+
+redis:
+  addr: "8.140.132.186:6379"
+  type: ""
+  pass: ""
+  tls: false

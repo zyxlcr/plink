@@ -12,13 +12,13 @@ func (b BaseUser) Ping() {
 
 }
 
-func (b BaseUser) Search(u BaseUser) (BaseUser, error) {
+func (b BaseUser) Search() (BaseUser, error) {
 	config.GVA_LOG.Info("Search")
-	mapper := model.NewMapper(u, nil)
+	mapper := model.NewMapper(b, nil)
 	user, err := mapper.SelectOne()
 	if err != nil {
 		config.GVA_LOG.Info("用户不存在")
-		return u, errors.Errorf("用户不存在: %s", u.Name)
+		return b, errors.Errorf("用户不存在: %s", b.Name)
 	}
 	config.GVA_LOG.Info(user.Name)
 	return user, nil

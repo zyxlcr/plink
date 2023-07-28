@@ -8,13 +8,14 @@ import (
 	"github.com/spf13/cast"
 )
 
-func (s Service) MyFriends(ctx any) {
+func (s *Service) MyFriends(ctx any) {
 	config.GVA_LOG.Info("MyFriends")
 	req, h := s.GetToken(ctx)
 	f := friend.Friend{}
 	f.Uid = cast.ToUint64(h.From)
 	fs, err := f.MyFriends()
 	if err != nil {
+		config.GVA_LOG.Info("err: " + err.Error())
 		req.GetConnection().SendMsgWithUrl("/friend/myfriend/ack/err", []byte(err.Error()))
 		return
 	}
